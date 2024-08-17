@@ -1,5 +1,6 @@
+/* Existing styles */
 .container {
-  overflow: auto;
+  overflow: none;
   height: 164px;
 }
 
@@ -7,4 +8,89 @@
   min-height: 100%;
   font-family: var(--font-family-code);
   font-size: var(--font-size-12);
+}
+
+.body_content {
+  height: 700px;
+  padding: 0 16px;
+}
+
+/* New Font Duo UI styles */
+/* styles/fontDuo.css */
+
+.font-duo-container {
+  width: 100%;
+  height: 100%;
+  background: #1E1E1E;
+  display: flex;
+  flex-direction: column;
+  color: white;
+  padding: 16px;
+}
+
+.font-info {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.font-name {
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.headline {
+  font-size: 28px;
+  line-height: 1.2;
+  margin-bottom: 16px;
+  font-weight: normal;
+}
+
+.body-text {
+  font-size: 14px;
+  line-height: 1.5;
+  margin-bottom: 16px;
+}
+
+.vibe-label {
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.vibe-buttons-container {
+  margin-bottom: 16px;
+}
+
+.vibe-button {
+  padding: 8px 12px;
+  background: transparent;
+  border-radius: 6px;
+  border: 1px solid #3D3D3D;
+  font-size: 13px;
+  line-height: 16px;
+  flex: 1;
+}
+
+.vibe-button.selected {
+  background: #3D3D3D;
+}
+
+.lucky-button {
+  background: #007AFF;
+  border-radius: 6px;
+  font-size: 14px;
+  padding: 10px;
+  margin-bottom: 16px;
+  width: 100%;
+}
+
+.tip-text {
+  font-size: 11px;
+  text-align: center;
+  opacity: 0.8;
+}
+
+.icon-button {
+  padding: 2px;
 }

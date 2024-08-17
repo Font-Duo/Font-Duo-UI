@@ -1,4 +1,4 @@
-import "!prismjs/themes/prism.css";
+import FontDuoUI from "./FontDuoUI";
 
 import {
   Button,
@@ -14,57 +14,7 @@ import styles from "./styles.css";
 import { InsertCodeHandler } from "./types";
 
 function Plugin() {
-  const [code, setCode] = useState(`function add(a, b) {\n  return a + b;\n}`);
-  const containerElementRef: RefObject<HTMLDivElement> = useRef(null);
-  const handleInsertCodeButtonClick = useCallback(
-    function () {
-      emit<InsertCodeHandler>("INSERT_CODE", code);
-    },
-    [code]
-  );
-  // Patch to make `react-simple-code-editor` compatible with Preact
-  useEffect(
-    function () {
-      const containerElement = containerElementRef.current;
-      if (containerElement === null) {
-        return;
-      }
-      const textAreaElement = containerElement.querySelector("textarea");
-      if (textAreaElement === null) {
-        return;
-      }
-      textAreaElement.textContent = code;
-      const preElement = containerElement.querySelector("pre");
-      if (preElement === null) {
-        return;
-      }
-      if (textAreaElement.nextElementSibling !== preElement) {
-        textAreaElement.after(preElement);
-      }
-    },
-    [code]
-  );
-  return (
-    <Container space="medium">
-      <VerticalSpace space="small" />
-      <div class={styles.container} ref={containerElementRef}>
-        <Editor
-          highlight={function (code: string) {
-            return highlight(code, languages.js, "js");
-          }}
-          onValueChange={setCode}
-          preClassName={styles.editor}
-          textareaClassName={styles.editor}
-          value={code}
-        />
-      </div>
-      <VerticalSpace space="large" />
-      <Button fullWidth onClick={handleInsertCodeButtonClick}>
-        Insert Code
-      </Button>
-      <VerticalSpace space="small" />
-    </Container>
-  );
+  return <FontDuoUI />;
 }
 
 export default render(Plugin);
