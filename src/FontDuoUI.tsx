@@ -15,6 +15,36 @@ import { Lock, RefreshCw, ChevronDown } from "lucide-react";
 import "./styles.css";
 import styles from "./styles.css";
 
+interface CustomButtonProps {
+  children: React.ReactNode;
+  onClick: () => void;
+  secondary: boolean;
+  isMore?: boolean;
+  fullWidth?: boolean;
+}
+
+const CustomButton: React.FC<CustomButtonProps> = ({
+  children,
+  onClick,
+  secondary,
+  isMore,
+  fullWidth,
+}) => {
+  return (
+    <button
+      onClick={onClick}
+      class={`${styles["custom-button"]} ${
+        secondary ? "secondary" : isMore ? "fullWidth" : "primary"
+      }`}
+    >
+      <span class={styles.button_content}>
+        {children}
+        {isMore && <ChevronDown size={12} />}
+      </span>
+    </button>
+  );
+};
+
 function FontDuoUI() {
   const [vibe, setVibe] = useState("Elegant");
 
@@ -29,7 +59,7 @@ function FontDuoUI() {
       <VerticalSpace space="small" />
       <div
         style={{
-          padding: "8px 16px 16px 16px",
+          padding: "8px 16px 8px 16px",
 
           backgroundColor: "#222222",
         }}
@@ -89,33 +119,44 @@ function FontDuoUI() {
         <p class={styles.bottom__button_text}>Choose your vibe:</p>
         <div class={styles.bottom__button_container}>
           {["Elegant", "Minimalist", "More"].map((v) => (
-            <Button
-              style={{
-                border: "none",
-                backgroundColor: "#222222",
-              }}
+            <CustomButton
               key={v}
               onClick={() => setVibe(v)}
               secondary={vibe !== v}
+              isMore={v === "More"}
             >
               {v}
-              {v === "More" && (
-                <ChevronDown size={12} style={{ marginLeft: "4px" }} />
-              )}
-            </Button>
+            </CustomButton>
           ))}
         </div>
       </div>
       <VerticalSpace space="small" />
-      <Button fullWidth onClick={() => {}} secondary>
-        <RefreshCw size={16} style={{ marginRight: "8px" }} />
-        I'm feeling lucky
-      </Button>
+      <div
+        style={{
+          padding: "0 16px",
+        }}
+      >
+        <button class={styles.button__fullWidth} onClick={() => {}}>
+          <RefreshCw size={12} style={{ marginRight: "8px" }} />
+          I'm feeling lucky
+        </button>
+      </div>
+
       <VerticalSpace space="small" />
-      <Muted>
-        💡 Tip: Edit the preview text to see how your content looks with
-        different font pairings.
-      </Muted>
+      <div
+        style={{
+          padding: "0 16px",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          marginTop: "-8px",
+        }}
+      >
+        <p class={styles.bottom__tip}>
+          💡 Tip: Edit the preview text to see how your content looks with
+          different font pairings.
+        </p>
+      </div>
     </Container>
   );
 }
