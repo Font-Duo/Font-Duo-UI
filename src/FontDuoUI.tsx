@@ -85,19 +85,27 @@ function FontDuoUI() {
       </div>
 
       <VerticalSpace space="large" />
-      <Stack space="small">
-        <Text>Choose your vibe:</Text>
-        <Columns space="extraSmall">
+      <div class={styles.bottom__button}>
+        <p class={styles.bottom__button_text}>Choose your vibe:</p>
+        <div class={styles.bottom__button_container}>
           {["Elegant", "Minimalist", "More"].map((v) => (
-            <Button key={v} onClick={() => setVibe(v)} secondary={vibe !== v}>
+            <Button
+              style={{
+                border: "none",
+                backgroundColor: "#222222",
+              }}
+              key={v}
+              onClick={() => setVibe(v)}
+              secondary={vibe !== v}
+            >
               {v}
               {v === "More" && (
                 <ChevronDown size={12} style={{ marginLeft: "4px" }} />
               )}
             </Button>
           ))}
-        </Columns>
-      </Stack>
+        </div>
+      </div>
       <VerticalSpace space="small" />
       <Button fullWidth onClick={() => {}} secondary>
         <RefreshCw size={16} style={{ marginRight: "8px" }} />
