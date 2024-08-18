@@ -25,6 +25,7 @@
 .mid__column_text {
   font-size: 11px;
   font-weight: 300;
+  opacity: 80%;
 }
 
 .top__column_icon_container {
@@ -56,7 +57,7 @@
   justify-content: flex-start;
   max-width: 150px;
   align-items: center;
-  margin-top: 4px;
+  margin-top: 8px;
 
   /* border: 1px solid white; */
   max-height: 32px;
@@ -68,7 +69,7 @@
 
 .mid__column_text_typography {
   font-size: 12px;
-  line-height: 16px;
+  line-height: 20px;
   font-weight: 300;
   /* border: 1px solid white; */
   margin-top: auto;
@@ -87,16 +88,90 @@
 
 .bottom__button_text {
   opacity: 80%;
-  font-size: 12px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 300;
   line-height: 12px;
 }
 .bottom__button_container {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 42px;
 }
 
-.bottom__button_container > button {
+/* BUTTOM STYLES */
+.vibe-selector {
+  display: flex;
+  gap: 8px;
+}
+
+.custom-button {
+  padding: 12px 16px;
+  font-size: 12px;
+  font-weight: 300;
+  width: 82px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: #222222;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.custom-button:focus {
+  outline: none;
+  /* box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5); */
+  border: 0.5px solid #767676;
+  background: #444444;
+  cursor: pointer;
+}
+
+.custom-button.isMore {
+  padding: 0;
+}
+
+.custom-button.primary {
+  background-color: white;
+  color: black;
+}
+
+.custom-button.primary:hover {
+  background-color: #f0f0f0;
+}
+
+.custom-button.secondary {
+  background-color: #222222;
+  color: #e0e0e0;
+}
+
+.custom-button.secondary:hover {
+  background-color: #2c2c2c;
+}
+
+.button_content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.button__fullWidth {
+  width: 100%;
+  background: #18a0fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  height: 40px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.bottom__tip {
+  text-align: center;
+  opacity: 80%;
+  font-weight: 300;
+  font-size: 11px;
 }
