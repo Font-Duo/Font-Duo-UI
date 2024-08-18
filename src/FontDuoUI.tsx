@@ -12,47 +12,78 @@ import {
   render,
 } from "@create-figma-plugin/ui";
 import { Lock, RefreshCw, ChevronDown } from "lucide-react";
+import "./styles.css";
+import styles from "./styles.css";
 
 function FontDuoUI() {
   const [vibe, setVibe] = useState("Elegant");
 
   return (
-    <Container space="medium">
+    <Container
+      style={{
+        padding: 0,
+        marginTop: "-12px",
+      }}
+      space="medium"
+    >
       <VerticalSpace space="small" />
-      <Stack space="small">
-        <Columns space="extraSmall">
-          <Text muted>Inter</Text>
-          <IconButton onClick={() => {}}>
-            <Lock size={16} />
-          </IconButton>
-          <IconButton onClick={() => {}}>
-            <RefreshCw size={16} />
-          </IconButton>
-        </Columns>
-        <Text
-          style={{ fontSize: "24px", lineHeight: "28px", fontWeight: "normal" }}
-        >
-          This is a sample headline text and should be a placeholder
-        </Text>
-      </Stack>
-      <VerticalSpace space="medium" />
-      <Stack space="small">
-        <Columns space="extraSmall">
-          <Text muted>News Gothic</Text>
-          <IconButton onClick={() => {}}>
-            <Lock size={16} />
-          </IconButton>
-          <IconButton onClick={() => {}}>
-            <RefreshCw size={16} />
-          </IconButton>
-        </Columns>
-        <Text>
+      <div
+        style={{
+          padding: "8px 16px 16px 16px",
+
+          backgroundColor: "#222222",
+        }}
+      >
+        <div class={styles.top__column}>
+          <p class={styles.top__column_text}>Inter</p>
+          <div class={styles.top__column_icon_container}>
+            <IconButton onClick={() => {}}>
+              <Lock size={12} />
+            </IconButton>
+            <span
+              style={{
+                fontSize: "8px",
+              }}
+            >
+              •
+            </span>
+            <IconButton onClick={() => {}}>
+              <RefreshCw size={12} />
+            </IconButton>
+          </div>
+        </div>
+        <div class={styles.top__column_textarea_container}>
+          <textarea class={styles.top__column_textarea}>
+            This is a sample headline text
+          </textarea>
+        </div>
+        <div class={styles.mid__column}>
+          <p class={styles.mid__column_text}>News Gothic</p>
+          <div class={styles.mid__column_icon_container}>
+            <IconButton onClick={() => {}}>
+              <Lock size={12} />
+            </IconButton>
+            <span
+              style={{
+                fontSize: "8px",
+              }}
+            >
+              •
+            </span>
+            <IconButton onClick={() => {}}>
+              <RefreshCw size={12} />
+            </IconButton>
+          </div>
+        </div>
+
+        <p class={styles.mid__column_text_typography}>
           Typography is the art and technique of arranging type to make written
           language legible, readable, and appealing when displayed. It involves
           choosing typefaces, point sizes, line lengths, line-spacing, and
           letter- spacing, and adjusting the space between pairs of letters.
-        </Text>
-      </Stack>
+        </p>
+      </div>
+
       <VerticalSpace space="large" />
       <Stack space="small">
         <Text>Choose your vibe:</Text>
