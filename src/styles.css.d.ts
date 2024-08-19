@@ -7,6 +7,7 @@ declare const styles: {
   readonly "button_content": string;
   readonly "container": string;
   readonly "custom-button": string;
+  readonly "custom_icon": string;
   readonly "editor": string;
   readonly "isMore": string;
   readonly "mid__column": string;

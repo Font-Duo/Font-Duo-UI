@@ -11,10 +11,10 @@ import {
   Stack,
   render,
 } from "@create-figma-plugin/ui";
-import { Lock, RefreshCw, ChevronDown } from "lucide-react";
+import { Lock, RefreshCw, ChevronDown, Unlock } from "lucide-react";
 import "./styles.css";
 import styles from "./styles.css";
-import { fetchGoogleFonts, generateFontPair, FontPair } from './fontDatabase';
+import { fetchGoogleFonts, generateFontPair, FontPair } from "./fontDatabase";
 
 interface CustomButtonProps {
   children: React.ReactNode;
@@ -49,10 +49,16 @@ const CustomButton: React.FC<CustomButtonProps> = ({
 function FontDuoUI() {
   const [vibe, setVibe] = useState("Elegant");
   const [currentPair, setCurrentPair] = useState<FontPair | null>(null);
-  const [headlineText, setHeadlineText] = useState("This is a sample headline text");
-  const [bodyText, setBodyText] = useState("Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. It involves choosing typefaces, point sizes, line lengths, line-spacing, and letter- spacing, and adjusting the space between pairs of letters.");
+  const [headlineText, setHeadlineText] = useState(
+    "This is a sample headline text"
+  );
+  const [bodyText, setBodyText] = useState(
+    "Typography is the art and technique of arranging type to make written language legible, readable, and appealing when displayed. It involves choosing typefaces, point sizes, line lengths, line-spacing, and letter- spacing, and adjusting the space between pairs of letters."
+  );
   const [headlineLocked, setHeadlineLocked] = useState(false);
   const [bodyLocked, setBodyLocked] = useState(false);
+
+  // Handle Icon Lock/Unlock Toggle
 
   useEffect(() => {
     async function initializeFonts() {
@@ -64,11 +70,13 @@ function FontDuoUI() {
 
   const generateNewPair = () => {
     const newPair = generateFontPair(vibe);
-    setCurrentPair(prevPair => {
+    setCurrentPair((prevPair) => {
       if (!prevPair) return newPair;
       return {
-        headlineFont: headlineLocked ? prevPair.headlineFont : newPair.headlineFont,
-        bodyFont: bodyLocked ? prevPair.bodyFont : newPair.bodyFont
+        headlineFont: headlineLocked
+          ? prevPair.headlineFont
+          : newPair.headlineFont,
+        bodyFont: bodyLocked ? prevPair.bodyFont : newPair.bodyFont,
       };
     });
     loadFont(newPair.headlineFont.family);
@@ -76,9 +84,12 @@ function FontDuoUI() {
   };
 
   const loadFont = (fontFamily: string) => {
-    const link = document.createElement('link');
-    link.href = `https://fonts.googleapis.com/css?family=${fontFamily.replace(' ', '+')}`;
-    link.rel = 'stylesheet';
+    const link = document.createElement("link");
+    link.href = `https://fonts.googleapis.com/css?family=${fontFamily.replace(
+      " ",
+      "+"
+    )}`;
+    link.rel = "stylesheet";
     document.head.appendChild(link);
   };
 
@@ -90,10 +101,14 @@ function FontDuoUI() {
   const regenerateHeadlineFont = () => {
     if (!headlineLocked) {
       const newPair = generateFontPair(vibe);
-      setCurrentPair(prevPair => prevPair ? {
-        ...prevPair,
-        headlineFont: newPair.headlineFont
-      } : newPair);
+      setCurrentPair((prevPair) =>
+        prevPair
+          ? {
+              ...prevPair,
+              headlineFont: newPair.headlineFont,
+            }
+          : newPair
+      );
       loadFont(newPair.headlineFont.family);
     }
   };
@@ -101,10 +116,14 @@ function FontDuoUI() {
   const regenerateBodyFont = () => {
     if (!bodyLocked) {
       const newPair = generateFontPair(vibe);
-      setCurrentPair(prevPair => prevPair ? {
-        ...prevPair,
-        bodyFont: newPair.bodyFont
-      } : newPair);
+      setCurrentPair((prevPair) =>
+        prevPair
+          ? {
+              ...prevPair,
+              bodyFont: newPair.bodyFont,
+            }
+          : newPair
+      );
       loadFont(newPair.bodyFont.family);
     }
   };
@@ -116,11 +135,11 @@ function FontDuoUI() {
     generateNewPair();
   };
 
-  const toggleLock = (type: 'headline' | 'body') => {
-    if (type === 'headline') {
-      setHeadlineLocked(!headlineLocked);
+  const toggleLock = (type: "headline" | "body") => {
+    if (type === "headline") {
+      setHeadlineLocked((prev) => !prev);
     } else {
-      setBodyLocked(!bodyLocked);
+      setBodyLocked((prev) => !prev);
     }
   };
 
@@ -137,42 +156,62 @@ function FontDuoUI() {
         style={{
           padding: "8px 16px 8px 16px",
           backgroundColor: "#222222",
+          height: "256px",
+          overflowY: "scroll",
         }}
       >
         <div class={styles.top__column}>
-          <p class={styles.top__column_text}>{currentPair?.headlineFont.family || 'Inter'}</p>
+          <p class={styles.top__column_text}>
+            {currentPair?.headlineFont.family || "Inter"}
+          </p>
           <div class={styles.top__column_icon_container}>
-            <IconButton onClick={() => toggleLock('headline')}>
-              <Lock size={12} />
-            </IconButton>
+            {/* Something here */}
+            <button
+              class={styles.custom_icon}
+              onClick={() => {
+                toggleLock("headline");
+              }}
+            >
+              {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
+            </button>
             <span style={{ fontSize: "8px" }}>•</span>
-            <IconButton onClick={regenerateHeadlineFont}>
+            <button class={styles.custom_icon} onClick={regenerateHeadlineFont}>
               <RefreshCw size={12} />
-            </IconButton>
+            </button>
           </div>
         </div>
         <div class={styles.top__column_textarea_container}>
-          <textarea 
+          <textarea
             class={styles.top__column_textarea}
             value={headlineText}
-            onInput={(e) => setHeadlineText((e.target as HTMLTextAreaElement).value)}
+            onInput={(e) =>
+              setHeadlineText((e.target as HTMLTextAreaElement).value)
+            }
             style={{ fontFamily: currentPair?.headlineFont.family }}
           />
         </div>
         <div class={styles.mid__column}>
-          <p class={styles.mid__column_text}>{currentPair?.bodyFont.family || 'News Gothic'}</p>
+          <p class={styles.mid__column_text}>
+            {currentPair?.bodyFont.family || "News Gothic"}
+          </p>
           <div class={styles.mid__column_icon_container}>
-            <IconButton onClick={() => toggleLock('body')}>
-              <Lock size={12} />
-            </IconButton>
+            <button
+              class={styles.custom_icon}
+              onClick={() => {
+                toggleLock("body");
+              }}
+            >
+              {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
+            </button>
+
             <span style={{ fontSize: "8px" }}>•</span>
-            <IconButton onClick={regenerateBodyFont}>
+            <button class={styles.custom_icon} onClick={regenerateBodyFont}>
               <RefreshCw size={12} />
-            </IconButton>
+            </button>
           </div>
         </div>
 
-        <p 
+        <p
           class={styles.mid__column_text_typography}
           style={{ fontFamily: currentPair?.bodyFont.family }}
         >
