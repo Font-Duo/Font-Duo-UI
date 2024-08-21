@@ -19,8 +19,10 @@ import { fetchGoogleFonts, generateFontPair, FontPair } from "./fontDatabase";
 interface CustomButtonProps {
   children: React.ReactNode;
   onClick: () => void;
-  secondary: boolean;
+  secondary?: boolean;
   isMore?: boolean;
+  isSelected?: boolean;
+  tert?: boolean;
 }
 
 interface EmptyStateProps {
@@ -31,22 +33,20 @@ const CustomButton = ({
   children,
   onClick,
   secondary,
-  isSelected
+  isSelected,
+  tert,
 }: CustomButtonProps) => {
   return (
     <button
       onClick={onClick}
       class={`${styles["custom-button"]} ${
         secondary ? "secondary" : "primary"
-      } ${isSelected ? styles.selected : ''}`}
+      } ${isSelected ? styles.selected : ""} ${tert ? "main" : null}  `}
     >
-      <span class={styles.button_content}>
-        {children}
-      </span>
+      <span class={styles.button_content}>{children}</span>
     </button>
   );
 };
-
 
 const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
   <div className={styles.emptyState}>
@@ -54,10 +54,10 @@ const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
     <p>Choose a vibe and let's create something awesome</p>
     <div className={styles.vibeButtons}>
       {[
-        { name: "Elegant"},
-        { name: "Minimalist"},
-        { name: "Playful"},
-        { name: "Modern"}
+        { name: "Elegant" },
+        { name: "Minimalist" },
+        { name: "Playful" },
+        { name: "Modern" },
       ].map((vibe) => (
         <button
           key={vibe.name}
@@ -153,9 +153,8 @@ function FontDuoUI() {
   };
 
   const handleFeelingLucky = () => {
-    const vibes = ["Elegant", "Minimalist", "Playful", "Modern"];
-    const randomVibe = vibes[Math.floor(Math.random() * vibes.length)];
-    handleVibeChange(randomVibe);
+    setVibe("lucky");
+    generateNewPair();
   };
 
   const toggleLock = (type: "headline" | "body") => {
@@ -201,7 +200,10 @@ function FontDuoUI() {
                   {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
                 </button>
                 <span style={{ fontSize: "8px" }}>•</span>
-                <button class={styles.custom_icon} onClick={regenerateHeadlineFont}>
+                <button
+                  class={styles.custom_icon}
+                  onClick={regenerateHeadlineFont}
+                >
                   <RefreshCw size={12} />
                 </button>
               </div>
@@ -259,7 +261,10 @@ function FontDuoUI() {
           </div>
           <VerticalSpace space="small" />
           <div style={{ padding: "0 16px" }}>
-            <button class={styles.button__fullWidth} onClick={handleFeelingLucky}>
+            <button
+              class={styles.button__fullWidth}
+              onClick={handleFeelingLucky}
+            >
               <RefreshCw size={12} style={{ marginRight: "8px" }} />
               I'm feeling lucky
             </button>
