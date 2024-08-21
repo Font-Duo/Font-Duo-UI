@@ -1,4 +1,4 @@
-import { h } from "preact";
+import { h, Fragment } from "preact";
 import { useState, useEffect } from "preact/hooks";
 import {
   Button,
@@ -21,32 +21,58 @@ interface CustomButtonProps {
   onClick: () => void;
   secondary: boolean;
   isMore?: boolean;
-  fullWidth?: boolean;
 }
 
-const CustomButton: React.FC<CustomButtonProps> = ({
+interface EmptyStateProps {
+  onVibeSelect: (vibe: string) => void;
+}
+
+const CustomButton = ({
   children,
   onClick,
   secondary,
-  isMore,
-  fullWidth,
-}) => {
+  isSelected
+}: CustomButtonProps) => {
   return (
     <button
       onClick={onClick}
       class={`${styles["custom-button"]} ${
-        secondary ? "secondary" : isMore ? "fullWidth" : "primary"
-      }`}
+        secondary ? "secondary" : "primary"
+      } ${isSelected ? styles.selected : ''}`}
     >
       <span class={styles.button_content}>
         {children}
-        {isMore && <ChevronDown size={12} />}
       </span>
     </button>
   );
 };
 
+
+const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
+  <div className={styles.emptyState}>
+    <h2>Craft your perfect font pair ✨</h2>
+    <p>Choose a vibe and let's create something awesome</p>
+    <div className={styles.vibeButtons}>
+      {[
+        { name: "Elegant"},
+        { name: "Minimalist"},
+        { name: "Playful"},
+        { name: "Modern"}
+      ].map((vibe) => (
+        <button
+          key={vibe.name}
+          onClick={() => onVibeSelect(vibe.name)}
+          class={`${styles.vibeButton} ${styles.equalWidth}`}
+        >
+          {vibe.name}
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
 function FontDuoUI() {
+  const [isVibeSelected, setIsVibeSelected] = useState(false);
   const [vibe, setVibe] = useState("Elegant");
   const [currentPair, setCurrentPair] = useState<FontPair | null>(null);
   const [headlineText, setHeadlineText] = useState(
@@ -58,12 +84,9 @@ function FontDuoUI() {
   const [headlineLocked, setHeadlineLocked] = useState(false);
   const [bodyLocked, setBodyLocked] = useState(false);
 
-  // Handle Icon Lock/Unlock Toggle
-
   useEffect(() => {
     async function initializeFonts() {
       await fetchGoogleFonts();
-      generateNewPair();
     }
     initializeFonts();
   }, []);
@@ -95,6 +118,7 @@ function FontDuoUI() {
 
   const handleVibeChange = (newVibe: string) => {
     setVibe(newVibe);
+    setIsVibeSelected(true);
     generateNewPair();
   };
 
@@ -131,8 +155,7 @@ function FontDuoUI() {
   const handleFeelingLucky = () => {
     const vibes = ["Elegant", "Minimalist", "Playful", "Modern"];
     const randomVibe = vibes[Math.floor(Math.random() * vibes.length)];
-    setVibe(randomVibe);
-    generateNewPair();
+    handleVibeChange(randomVibe);
   };
 
   const toggleLock = (type: "headline" | "body") => {
@@ -151,113 +174,113 @@ function FontDuoUI() {
       }}
       space="medium"
     >
-      <VerticalSpace space="small" />
-      <div
-        style={{
-          padding: "8px 16px 8px 16px",
-          backgroundColor: "#222222",
-          height: "256px",
-          overflowY: "scroll",
-        }}
-      >
-        <div class={styles.top__column}>
-          <p class={styles.top__column_text}>
-            {currentPair?.headlineFont.family || "Inter"}
-          </p>
-          <div class={styles.top__column_icon_container}>
-            {/* Something here */}
-            <button
-              class={styles.custom_icon}
-              onClick={() => {
-                toggleLock("headline");
-              }}
+      {!isVibeSelected ? (
+        <EmptyState onVibeSelect={handleVibeChange} />
+      ) : (
+        <>
+          <VerticalSpace space="small" />
+          <div
+            style={{
+              padding: "8px 16px 8px 16px",
+              backgroundColor: "#222222",
+              height: "256px",
+              overflowY: "scroll",
+            }}
+          >
+            <div class={styles.top__column}>
+              <p class={styles.top__column_text}>
+                {currentPair?.headlineFont.family || "Inter"}
+              </p>
+              <div class={styles.top__column_icon_container}>
+                <button
+                  class={styles.custom_icon}
+                  onClick={() => {
+                    toggleLock("headline");
+                  }}
+                >
+                  {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                </button>
+                <span style={{ fontSize: "8px" }}>•</span>
+                <button class={styles.custom_icon} onClick={regenerateHeadlineFont}>
+                  <RefreshCw size={12} />
+                </button>
+              </div>
+            </div>
+            <div class={styles.top__column_textarea_container}>
+              <textarea
+                class={styles.top__column_textarea}
+                value={headlineText}
+                onInput={(e) =>
+                  setHeadlineText((e.target as HTMLTextAreaElement).value)
+                }
+                style={{ fontFamily: currentPair?.headlineFont.family }}
+              />
+            </div>
+            <div class={styles.mid__column}>
+              <p class={styles.mid__column_text}>
+                {currentPair?.bodyFont.family || "News Gothic"}
+              </p>
+              <div class={styles.mid__column_icon_container}>
+                <button
+                  class={styles.custom_icon}
+                  onClick={() => {
+                    toggleLock("body");
+                  }}
+                >
+                  {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                </button>
+                <span style={{ fontSize: "8px" }}>•</span>
+                <button class={styles.custom_icon} onClick={regenerateBodyFont}>
+                  <RefreshCw size={12} />
+                </button>
+              </div>
+            </div>
+            <p
+              class={styles.mid__column_text_typography}
+              style={{ fontFamily: currentPair?.bodyFont.family }}
             >
-              {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
-            </button>
-            <span style={{ fontSize: "8px" }}>•</span>
-            <button class={styles.custom_icon} onClick={regenerateHeadlineFont}>
-              <RefreshCw size={12} />
+              {bodyText}
+            </p>
+          </div>
+          <VerticalSpace space="large" />
+          <div class={styles.bottom__button}>
+            <p class={styles.bottom__button_text}>Choose your vibe:</p>
+            <div class={styles.vibeButtons}>
+              {["Elegant", "Minimalist", "Playful", "Modern"].map((v) => (
+                <CustomButton
+                  key={v}
+                  onClick={() => handleVibeChange(v)}
+                  isSelected={vibe === v}
+                >
+                  {v}
+                </CustomButton>
+              ))}
+            </div>
+          </div>
+          <VerticalSpace space="small" />
+          <div style={{ padding: "0 16px" }}>
+            <button class={styles.button__fullWidth} onClick={handleFeelingLucky}>
+              <RefreshCw size={12} style={{ marginRight: "8px" }} />
+              I'm feeling lucky
             </button>
           </div>
-        </div>
-        <div class={styles.top__column_textarea_container}>
-          <textarea
-            class={styles.top__column_textarea}
-            value={headlineText}
-            onInput={(e) =>
-              setHeadlineText((e.target as HTMLTextAreaElement).value)
-            }
-            style={{ fontFamily: currentPair?.headlineFont.family }}
-          />
-        </div>
-        <div class={styles.mid__column}>
-          <p class={styles.mid__column_text}>
-            {currentPair?.bodyFont.family || "News Gothic"}
-          </p>
-          <div class={styles.mid__column_icon_container}>
-            <button
-              class={styles.custom_icon}
-              onClick={() => {
-                toggleLock("body");
-              }}
-            >
-              {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
-            </button>
-
-            <span style={{ fontSize: "8px" }}>•</span>
-            <button class={styles.custom_icon} onClick={regenerateBodyFont}>
-              <RefreshCw size={12} />
-            </button>
+          <VerticalSpace space="small" />
+          <div
+            style={{
+              padding: "0 16px",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: "-8px",
+            }}
+          >
+            <p class={styles.bottom__tip}>
+              💡 Tip: Edit the preview text to see how your content looks with
+              different font pairings.
+            </p>
           </div>
-        </div>
-
-        <p
-          class={styles.mid__column_text_typography}
-          style={{ fontFamily: currentPair?.bodyFont.family }}
-        >
-          {bodyText}
-        </p>
-      </div>
-
-      <VerticalSpace space="large" />
-      <div class={styles.bottom__button}>
-        <p class={styles.bottom__button_text}>Choose your vibe:</p>
-        <div class={styles.bottom__button_container}>
-          {["Elegant", "Minimalist", "More"].map((v) => (
-            <CustomButton
-              key={v}
-              onClick={() => handleVibeChange(v)}
-              secondary={vibe !== v}
-              isMore={v === "More"}
-            >
-              {v}
-            </CustomButton>
-          ))}
-        </div>
-      </div>
-      <VerticalSpace space="small" />
-      <div style={{ padding: "0 16px" }}>
-        <button class={styles.button__fullWidth} onClick={handleFeelingLucky}>
-          <RefreshCw size={12} style={{ marginRight: "8px" }} />
-          I'm feeling lucky
-        </button>
-      </div>
-
-      <VerticalSpace space="small" />
-      <div
-        style={{
-          padding: "0 16px",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          marginTop: "-8px",
-        }}
-      >
-        <p class={styles.bottom__tip}>
-          💡 Tip: Edit the preview text to see how your content looks with
-          different font pairings.
-        </p>
-      </div>
+        </>
+      )}
     </Container>
   );
 }
