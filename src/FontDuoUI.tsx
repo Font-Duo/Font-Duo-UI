@@ -55,7 +55,7 @@ const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
     <div className={styles.vibeButtons}>
       {[
         { name: "Elegant" },
-        { name: "Minimalist" },
+        { name: "Mono" },
         { name: "Playful" },
         { name: "Modern" },
       ].map((vibe) => (
@@ -248,7 +248,7 @@ function FontDuoUI() {
           <div class={styles.bottom__button}>
             <p class={styles.bottom__button_text}>Choose your vibe:</p>
             <div class={styles.vibeButtons}>
-              {["Elegant", "Minimalist", "Playful", "Modern"].map((v) => (
+              {["Elegant", "Mono", "Playful", "Modern"].map((v) => (
                 <CustomButton
                   key={v}
                   onClick={() => handleVibeChange(v)}
