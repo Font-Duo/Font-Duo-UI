@@ -23,16 +23,26 @@ export async function fetchGoogleFonts() {
   try {
     const response = await fetch(url);
     const data = await response.json();
-    googleFonts = data.items.slice(0, 150).map((font: any, index: number) => ({
-      family: font.family,
-      category: font.category,
-      variants: font.variants,
-      subsets: font.subsets,
-      version: font.version,
-      lastModified: font.lastModified,
-      files: font.files,
-      popularity: index + 1, // This now represents the font's rank within the top 150
-    }));
+
+    googleFonts = data.items
+      .filter((font: any) => {
+        // Check if the font has a weight less than 400
+        return font.variants.some((variant: string) => {
+          const weight = parseInt(variant);
+          return !isNaN(weight) && weight < 400;
+        });
+      })
+      .map((font: any, index: number) => ({
+        family: font.family,
+        category: font.category,
+        variants: font.variants,
+        subsets: font.subsets,
+        version: font.version,
+        lastModified: font.lastModified,
+        files: font.files,
+        popularity: index + 1, // This now represents the font's rank within the filtered list
+      }));
+    console.log(googleFonts);
   } catch (error) {
     console.error("Error fetching Google Fonts:", error);
     // Fallback to hardcoded fonts if the API call failsd
@@ -192,12 +202,13 @@ export async function fetchGoogleFonts() {
 }
 
 function isLikelyAllCaps(font: Font): boolean {
-  const allCapsKeywords = ['caps', 'uppercase', 'majuscule'];
-  const iconKeywords = ['icon', 'material', 'fontawesome', 'glyphicon'];
-  return allCapsKeywords.some(keyword => 
-    font.family.toLowerCase().includes(keyword)
-  ) || iconKeywords.some(keyword =>
-    font.family.toLowerCase().includes(keyword)
+  const allCapsKeywords = ["caps", "uppercase", "majuscule"];
+  const iconKeywords = ["icon", "material", "fontawesome", "glyphicon"];
+  return (
+    allCapsKeywords.some((keyword) =>
+      font.family.toLowerCase().includes(keyword)
+    ) ||
+    iconKeywords.some((keyword) => font.family.toLowerCase().includes(keyword))
   );
 }
 
@@ -205,58 +216,75 @@ export function generateFontPair(vibe: string): FontPair {
   let headlineFonts: Font[] = [];
   let bodyFonts: Font[] = [];
 
-   // Filter fonts based on vibe
-   switch (vibe.toLowerCase()) {
+  // Filter fonts based on vibe
+  switch (vibe.toLowerCase()) {
     case "elegant":
-      headlineFonts = googleFonts.filter(font => 
-        font.category === "serif" && !isLikelyAllCaps(font)
+      headlineFonts = googleFonts.filter(
+        (font) => font.category === "serif" && !isLikelyAllCaps(font)
       );
-      bodyFonts = googleFonts.filter(font =>
-        ["serif", "sans-serif"].includes(font.category) && !isLikelyAllCaps(font)
+      bodyFonts = googleFonts.filter(
+        (font) =>
+          ["serif", "sans-serif"].includes(font.category) &&
+          !isLikelyAllCaps(font)
       );
       break;
     case "mono":
-      const monoFonts = googleFonts.filter(font =>
-        (font.category === "monospace" || 
-        font.family.toLowerCase().includes("mono") ||
-        font.family.toLowerCase().includes("code")) &&
-        !isLikelyAllCaps(font)
+      const monoFonts = googleFonts.filter(
+        (font) =>
+          font.category === "monospace" ||
+          (font.family.toLowerCase().includes("mono") && !isLikelyAllCaps(font))
       );
       headlineFonts = monoFonts;
       bodyFonts = monoFonts;
       break;
     case "modern":
-      headlineFonts = googleFonts.filter(font =>
-        font.category === "sans-serif" && !isLikelyAllCaps(font)
-      ).sort((a, b) => a.popularity - b.popularity).slice(0, 20);
-      bodyFonts = googleFonts.filter(font =>
-        font.category === "sans-serif" && !isLikelyAllCaps(font)
-      ).sort((a, b) => a.popularity - b.popularity).slice(0, 30);
+      headlineFonts = googleFonts
+        .filter(
+          (font) => font.category === "sans-serif" && !isLikelyAllCaps(font)
+        )
+        .sort((a, b) => a.popularity - b.popularity)
+        .slice(0, 20);
+      bodyFonts = googleFonts
+        .filter(
+          (font) => font.category === "sans-serif" && !isLikelyAllCaps(font)
+        )
+        .sort((a, b) => a.popularity - b.popularity)
+        .slice(0, 30);
       break;
     case "playful":
-      headlineFonts = googleFonts.filter(font =>
-        ["display", "handwriting"].includes(font.category) && !isLikelyAllCaps(font)
+      headlineFonts = googleFonts.filter(
+        (font) =>
+          ["display", "handwriting"].includes(font.category) &&
+          !isLikelyAllCaps(font)
       );
-      bodyFonts = googleFonts.filter(font =>
-        ["sans-serif", "serif"].includes(font.category) && !isLikelyAllCaps(font)
+      bodyFonts = googleFonts.filter(
+        (font) =>
+          ["sans-serif", "serif"].includes(font.category) &&
+          !isLikelyAllCaps(font)
       );
       break;
     case "lucky":
-      headlineFonts = googleFonts.filter(font =>
-        ["serif", "sans-serif"].includes(font.category) && !isLikelyAllCaps(font)
+      headlineFonts = googleFonts.filter(
+        (font) =>
+          ["serif", "sans-serif"].includes(font.category) &&
+          !isLikelyAllCaps(font)
       );
-      bodyFonts = googleFonts.filter(font =>
-        ["serif", "sans-serif"].includes(font.category) && !isLikelyAllCaps(font)
+      bodyFonts = googleFonts.filter(
+        (font) =>
+          ["serif", "sans-serif"].includes(font.category) &&
+          !isLikelyAllCaps(font)
       );
       break;
     default:
-      headlineFonts = googleFonts.filter(font => !isLikelyAllCaps(font));
-      bodyFonts = googleFonts.filter(font => !isLikelyAllCaps(font));
+      headlineFonts = googleFonts.filter((font) => !isLikelyAllCaps(font));
+      bodyFonts = googleFonts.filter((font) => !isLikelyAllCaps(font));
   }
 
   // If no fonts match the vibe, use all fonts except all-caps and icon fonts
-  if (headlineFonts.length === 0) headlineFonts = googleFonts.filter(font => !isLikelyAllCaps(font));
-  if (bodyFonts.length === 0) bodyFonts = googleFonts.filter(font => !isLikelyAllCaps(font));
+  if (headlineFonts.length === 0)
+    headlineFonts = googleFonts.filter((font) => !isLikelyAllCaps(font));
+  if (bodyFonts.length === 0)
+    bodyFonts = googleFonts.filter((font) => !isLikelyAllCaps(font));
 
   const headlineFont =
     headlineFonts[Math.floor(Math.random() * headlineFonts.length)];

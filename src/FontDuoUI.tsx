@@ -1,5 +1,5 @@
 import { h, Fragment } from "preact";
-import { useState, useEffect } from "preact/hooks";
+import { useState, useEffect, useRef } from "preact/hooks";
 import {
   Button,
   VerticalSpace,
@@ -15,6 +15,13 @@ import { Lock, RefreshCw, ChevronDown, Unlock } from "lucide-react";
 import "./styles.css";
 import styles from "./styles.css";
 import { fetchGoogleFonts, generateFontPair, FontPair } from "./fontDatabase";
+
+interface TextAreaProps {
+  className?: string;
+  value?: string;
+  onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  // Add any other props you need
+}
 
 interface CustomButtonProps {
   children: React.ReactNode;
@@ -91,6 +98,12 @@ function FontDuoUI() {
     initializeFonts();
   }, []);
 
+  useEffect(() => {
+    if (isVibeSelected) {
+      generateNewPair();
+    }
+  }, [vibe, isVibeSelected]);
+
   const generateNewPair = () => {
     const newPair = generateFontPair(vibe);
     setCurrentPair((prevPair) => {
@@ -165,6 +178,8 @@ function FontDuoUI() {
     }
   };
 
+  // Mid textarea grow
+
   return (
     <Container
       style={{
@@ -213,7 +228,7 @@ function FontDuoUI() {
                 class={styles.top__column_textarea}
                 value={headlineText}
                 onInput={(e) =>
-                  setHeadlineText((e.target as HTMLTextAreaElement).value)
+                  setHeadlineText(() => (e.target as HTMLTextAreaElement).value)
                 }
                 style={{ fontFamily: currentPair?.headlineFont.family }}
               />
@@ -237,12 +252,12 @@ function FontDuoUI() {
                 </button>
               </div>
             </div>
-            <p
-              class={styles.mid__column_text_typography}
+            <textarea
+              class={styles.mid__column_textarea}
               style={{ fontFamily: currentPair?.bodyFont.family }}
             >
               {bodyText}
-            </p>
+            </textarea>
           </div>
           <VerticalSpace space="large" />
           <div class={styles.bottom__button}>
