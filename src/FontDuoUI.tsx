@@ -16,6 +16,8 @@ import "./styles.css";
 import styles from "./styles.css";
 import { fetchGoogleFonts, generateFontPair, FontPair } from "./fontDatabase";
 
+type Styles = { [key: string]: string };
+
 interface TextAreaProps {
   className?: string;
   value?: string;
@@ -41,16 +43,15 @@ const CustomButton = ({
   onClick,
   secondary,
   isSelected,
-  tert,
 }: CustomButtonProps) => {
   return (
     <button
       onClick={onClick}
-      class={`${styles["custom-button"]} ${
-        secondary ? "secondary" : "primary"
-      } ${isSelected ? styles.selected : ""} ${tert ? "main" : null}  `}
+      class={`${(styles as Styles)["custom-button"]} ${
+        secondary ? (styles as Styles).secondary : (styles as Styles).primary
+      } ${isSelected ? (styles as Styles).selected : ""}`}
     >
-      <span class={styles.button_content}>{children}</span>
+      {children}
     </button>
   );
 };
@@ -61,10 +62,10 @@ const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
     <p>Choose a vibe and let's create something awesome</p>
     <div className={styles.vibeButtons}>
       {[
+        { name: "Modern" },
         { name: "Elegant" },
         { name: "Mono" },
         { name: "Playful" },
-        { name: "Modern" },
       ].map((vibe) => (
         <button
           key={vibe.name}
@@ -91,6 +92,10 @@ function FontDuoUI() {
   const [headlineLocked, setHeadlineLocked] = useState(false);
   const [bodyLocked, setBodyLocked] = useState(false);
 
+  const headlineRef = useRef<HTMLTextAreaElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     async function initializeFonts() {
       await fetchGoogleFonts();
@@ -103,6 +108,27 @@ function FontDuoUI() {
       generateNewPair();
     }
   }, [vibe, isVibeSelected]);
+
+  useEffect(() => {
+    adjustTextareaHeight(headlineRef.current, containerRef.current);
+    adjustTextareaHeight(bodyRef.current, containerRef.current);
+  }, []);
+
+  useEffect(() => {
+    if (isVibeSelected) {
+      adjustTextareaHeight(headlineRef.current, containerRef.current);
+      adjustTextareaHeight(bodyRef.current, containerRef.current);
+    }
+  }, [headlineText, bodyText, isVibeSelected]);
+
+  const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null, container: HTMLElement | null) => {
+    if (textarea && container) {
+      const scrollTop = container.scrollTop;
+      textarea.style.height = 'auto';
+      textarea.style.height = `${Math.max(textarea.scrollHeight, textarea.clientHeight)}px`;
+      container.scrollTop = scrollTop;
+    }
+  };
 
   const generateNewPair = () => {
     const newPair = generateFontPair(vibe);
@@ -178,7 +204,17 @@ function FontDuoUI() {
     }
   };
 
-  // Mid textarea grow
+  const handleHeadlineChange = (e: Event) => {
+    const target = e.target as HTMLTextAreaElement;
+    setHeadlineText(target.value);
+    adjustTextareaHeight(target, containerRef.current);
+  };
+
+  const handleBodyChange = (e: Event) => {
+    const target = e.target as HTMLTextAreaElement;
+    setBodyText(target.value);
+    adjustTextareaHeight(target, containerRef.current);
+  };
 
   return (
     <Container
@@ -194,6 +230,7 @@ function FontDuoUI() {
         <>
           <VerticalSpace space="small" />
           <div
+            ref={containerRef}
             style={{
               padding: "8px 16px 8px 16px",
               backgroundColor: "#222222",
@@ -223,13 +260,12 @@ function FontDuoUI() {
                 </button>
               </div>
             </div>
-            <div class={styles.top__column_textarea_container}>
+            <div class={styles.top__column_textarea}>
               <textarea
+                ref={headlineRef}
                 class={styles.top__column_textarea}
                 value={headlineText}
-                onInput={(e) =>
-                  setHeadlineText(() => (e.target as HTMLTextAreaElement).value)
-                }
+                onInput={handleHeadlineChange}
                 style={{ fontFamily: currentPair?.headlineFont.family }}
               />
             </div>
@@ -253,21 +289,23 @@ function FontDuoUI() {
               </div>
             </div>
             <textarea
+              ref={bodyRef}
               class={styles.mid__column_textarea}
+              value={bodyText}
+              onInput={handleBodyChange}
               style={{ fontFamily: currentPair?.bodyFont.family }}
-            >
-              {bodyText}
-            </textarea>
+            />
           </div>
           <VerticalSpace space="large" />
           <div class={styles.bottom__button}>
             <p class={styles.bottom__button_text}>Choose your vibe:</p>
             <div class={styles.vibeButtons}>
-              {["Elegant", "Mono", "Playful", "Modern"].map((v) => (
+              {["Modern", "Elegant", "Mono", "Playful"].map((v) => (
                 <CustomButton
                   key={v}
                   onClick={() => handleVibeChange(v)}
                   isSelected={vibe === v}
+                  secondary={vibe !== v}
                 >
                   {v}
                 </CustomButton>

@@ -17,8 +17,6 @@ declare const styles: {
   readonly "mid__column_icon_container": string;
   readonly "mid__column_text": string;
   readonly "mid__column_textarea": string;
-  readonly "primary": string;
-  readonly "secondary": string;
   readonly "selected": string;
   readonly "top__column": string;
   readonly "top__column_icon_container": string;
