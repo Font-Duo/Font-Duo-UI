@@ -15,6 +15,7 @@ import { Lock, RefreshCw, ChevronDown, Unlock } from "lucide-react";
 import "./styles.css";
 import styles from "./styles.css";
 import { fetchGoogleFonts, generateFontPair, FontPair } from "./fontDatabase";
+import { motion } from "framer-motion";
 
 type Styles = { [key: string]: string };
 
@@ -82,6 +83,11 @@ const EmptyState = ({ onVibeSelect }: EmptyStateProps): h.JSX.Element => (
 function FontDuoUI() {
   const [isVibeSelected, setIsVibeSelected] = useState(false);
   const [vibe, setVibe] = useState("Elegant");
+  const [isGeneratingLucky, setIsGeneratingLucky] = useState(false);
+
+  console.log("isVibeSelected:", isVibeSelected);
+  console.log("vibe:", vibe);
+
   const [currentPair, setCurrentPair] = useState<FontPair | null>(null);
   const [headlineText, setHeadlineText] = useState(
     "This is a sample headline text"
@@ -91,6 +97,8 @@ function FontDuoUI() {
   );
   const [headlineLocked, setHeadlineLocked] = useState(false);
   const [bodyLocked, setBodyLocked] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const headlineRef = useRef<HTMLTextAreaElement>(null);
   const bodyRef = useRef<HTMLTextAreaElement>(null);
@@ -130,7 +138,10 @@ function FontDuoUI() {
     }
   };
 
-  const generateNewPair = () => {
+  const generateNewPair = async () => {
+    setIsGenerating(true);
+    setIsLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
     const newPair = generateFontPair(vibe);
     setCurrentPair((prevPair) => {
       if (!prevPair) return newPair;
@@ -143,6 +154,8 @@ function FontDuoUI() {
     });
     loadFont(newPair.headlineFont.family);
     loadFont(newPair.bodyFont.family);
+    setIsLoading(false);
+    setIsGenerating(false);
   };
 
   const loadFont = (fontFamily: string) => {
@@ -156,6 +169,7 @@ function FontDuoUI() {
   };
 
   const handleVibeChange = (newVibe: string) => {
+    console.log("handleVibeChange called with:", newVibe);
     setVibe(newVibe);
     setIsVibeSelected(true);
     generateNewPair();
@@ -192,8 +206,11 @@ function FontDuoUI() {
   };
 
   const handleFeelingLucky = () => {
+    setIsGeneratingLucky(true);
     setVibe("lucky");
-    generateNewPair();
+    generateNewPair().then(() => {
+      setIsGeneratingLucky(false);
+    });
   };
 
   const toggleLock = (type: "headline" | "body") => {
@@ -236,67 +253,88 @@ function FontDuoUI() {
               backgroundColor: "#222222",
               height: "256px",
               overflowY: "scroll",
+              position: "relative",
             }}
           >
-            <div class={styles.top__column}>
-              <p class={styles.top__column_text}>
-                {currentPair?.headlineFont.family || "Inter"}
-              </p>
-              <div class={styles.top__column_icon_container}>
-                <button
-                  class={styles.custom_icon}
-                  onClick={() => {
-                    toggleLock("headline");
-                  }}
-                >
-                  {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
-                </button>
-                <span style={{ fontSize: "8px" }}>•</span>
-                <button
-                  class={styles.custom_icon}
-                  onClick={regenerateHeadlineFont}
-                >
-                  <RefreshCw size={12} />
-                </button>
+            {isGeneratingLucky ? (
+              <div 
+                style={{ 
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "rgba(34, 34, 34, 1)",
+                }}
+              >
+                <Text style={{ color: "#ffffff" }}>Generating perfect font pair...</Text>
               </div>
-            </div>
-            <div class={styles.top__column_textarea}>
-              <textarea
-                ref={headlineRef}
-                class={styles.top__column_textarea}
-                value={headlineText}
-                onInput={handleHeadlineChange}
-                style={{ fontFamily: currentPair?.headlineFont.family }}
-              />
-            </div>
-            <div class={styles.mid__column}>
-              <p class={styles.mid__column_text}>
-                {currentPair?.bodyFont.family || "News Gothic"}
-              </p>
-              <div class={styles.mid__column_icon_container}>
-                <button
-                  class={styles.custom_icon}
-                  onClick={() => {
-                    toggleLock("body");
-                  }}
-                >
-                  {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
-                </button>
-                <span style={{ fontSize: "8px" }}>•</span>
-                <button class={styles.custom_icon} onClick={regenerateBodyFont}>
-                  <RefreshCw size={12} />
-                </button>
-              </div>
-            </div>
-            <textarea
-              ref={bodyRef}
-              class={styles.mid__column_textarea}
-              value={bodyText}
-              onInput={handleBodyChange}
-              style={{ fontFamily: currentPair?.bodyFont.family }}
-            />
+            ) : (
+              <>
+                <div class={styles.top__column}>
+                  <p class={styles.top__column_text}>
+                    {currentPair?.headlineFont.family || "Inter"}
+                  </p>
+                  <div class={styles.top__column_icon_container}>
+                    <button
+                      class={styles.custom_icon}
+                      onClick={() => {
+                        toggleLock("headline");
+                      }}
+                    >
+                      {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                    </button>
+                    <span style={{ fontSize: "8px" }}>•</span>
+                    <button
+                      class={styles.custom_icon}
+                      onClick={regenerateHeadlineFont}
+                    >
+                      <RefreshCw size={12} />
+                    </button>
+                  </div>
+                </div>
+                <div class={styles.top__column_textarea}>
+                  <textarea
+                    ref={headlineRef}
+                    class={styles.top__column_textarea}
+                    value={headlineText}
+                    onInput={handleHeadlineChange}
+                    style={{ fontFamily: currentPair?.headlineFont.family }}
+                  />
+                </div>
+                <div class={styles.mid__column}>
+                  <p class={styles.mid__column_text}>
+                    {currentPair?.bodyFont.family || "News Gothic"}
+                  </p>
+                  <div class={styles.mid__column_icon_container}>
+                    <button
+                      class={styles.custom_icon}
+                      onClick={() => {
+                        toggleLock("body");
+                      }}
+                    >
+                      {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                    </button>
+                    <span style={{ fontSize: "8px" }}>•</span>
+                    <button class={styles.custom_icon} onClick={regenerateBodyFont}>
+                      <RefreshCw size={12} />
+                    </button>
+                  </div>
+                </div>
+                <textarea
+                  ref={bodyRef}
+                  class={styles.mid__column_textarea}
+                  value={bodyText}
+                  onInput={handleBodyChange}
+                  style={{ fontFamily: currentPair?.bodyFont.family }}
+                />
+              </>
+            )}
           </div>
-          <VerticalSpace space="large" />
+          <VerticalSpace space="small" />
           <div class={styles.bottom__button}>
             <p class={styles.bottom__button_text}>Choose your vibe:</p>
             <div class={styles.vibeButtons}>
