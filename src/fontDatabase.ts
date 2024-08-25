@@ -16,8 +16,16 @@ export interface FontPair {
 
 let googleFonts: Font[] = [];
 
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 export async function fetchGoogleFonts() {
-  const apiKey = "AIzaSyCQ0-qoFWiSh-as3YqjRFPDStskCxMLymE"; // Replace with your actual API key
+  const apiKey = process.env.GOOGLE_FONTS_API_KEY;
+  if (!apiKey) {
+    console.error("API key not found in environment variables");
+    return;
+  }
   const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`;
 
   try {
