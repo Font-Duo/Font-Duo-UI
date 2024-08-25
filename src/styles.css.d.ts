@@ -5,6 +5,7 @@ declare const styles: {
   readonly "body-container": string;
   readonly "body-controls": string;
   readonly "body-font-name": string;
+  readonly "body-text": string;
   readonly "body-textarea": string;
   readonly "container": string;
   readonly "custom-button": string;
@@ -18,6 +19,7 @@ declare const styles: {
   readonly "headline-container": string;
   readonly "headline-controls": string;
   readonly "headline-font-name": string;
+  readonly "headline-text": string;
   readonly "headline-textarea": string;
   readonly "isMore": string;
   readonly "lucky-button": string;

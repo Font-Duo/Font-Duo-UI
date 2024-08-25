@@ -72,22 +72,6 @@ function FontDuoUI() {
     }
   }, [vibe, isVibeSelected]);
 
-  // Adjust textarea height when text changes
-  useEffect(() => {
-    if (isVibeSelected) {
-      adjustTextareaHeight(headlineRef.current);
-      adjustTextareaHeight(bodyRef.current);
-    }
-  }, [headlineText, bodyText, isVibeSelected]);
-
-  // Adjust textarea height function
-  const adjustTextareaHeight = (textarea: HTMLTextAreaElement | null) => {
-    if (textarea) {
-      textarea.style.height = 'auto';
-      textarea.style.height = `${textarea.scrollHeight}px`;
-    }
-  };
-
   // Generate new font pair
   const generateNewPair = async () => {
     setIsGenerating(true);
@@ -174,17 +158,13 @@ function FontDuoUI() {
   };
 
   // Handle headline text change
-  const handleHeadlineChange = (e: Event) => {
-    const target = e.target as HTMLTextAreaElement;
-    setHeadlineText(target.value);
-    adjustTextareaHeight(target);
+  const handleHeadlineChange = (text: string) => {
+    setHeadlineText(text);
   };
 
   // Handle body text change
-  const handleBodyChange = (e: Event) => {
-    const target = e.target as HTMLTextAreaElement;
-    setBodyText(target.value);
-    adjustTextareaHeight(target);
+  const handleBodyChange = (text: string) => {
+    setBodyText(text);
   };
 
   // Handle apply button click
@@ -203,83 +183,79 @@ function FontDuoUI() {
             ref={containerRef} 
             className={styles['preview-container']}
           >
-            {isGeneratingLucky ? (
-              // Overlay when generating a "lucky" font pair
-              <div style={{ 
-                position: "absolute", 
-                top: 0, 
-                left: 0, 
-                right: 0, 
-                bottom: 0, 
-                display: "flex", 
-                justifyContent: "center", 
-                alignItems: "center", 
-                backgroundColor: "rgba(34, 34, 34, 1)" 
-              }}>
-                <Text style={{ color: "#ffffff" }}>Generating perfect font pair...</Text>
-              </div>
-            ) : (
-              // Font pair display
-              <div className={styles["text-container"]}>
-                {/* Headline font section */}
-                <div className={styles["headline-column"]}>
-                  <p className={styles["headline-font-name"]}>
-                    {currentPair?.headlineFont.family || "Inter"}
-                  </p>
-                  <div className={styles["headline-controls"]}>
-                    {/* Lock/Unlock button for headline font */}
-                    <button
-                      className={styles.custom_icon}
-                      onClick={() => toggleLock("headline")}
-                    >
-                      {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
-                    </button>
-                    <span style={{ fontSize: "8px" }}>•</span>
-                    {/* Regenerate headline font button */}
-                    <button className={styles.custom_icon} onClick={regenerateHeadlineFont}>
-                      <RefreshCw size={12} />
-                    </button>
-                  </div>
+            <div className={styles["text-container"]}>
+              {isGeneratingLucky ? (
+                <div style={{ 
+                  position: "absolute", 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  bottom: 0, 
+                  display: "flex", 
+                  justifyContent: "center", 
+                  alignItems: "center", 
+                  backgroundColor: "rgba(34, 34, 34, 1)",
+                  zIndex: 10
+                }}>
+                  <Text style={{ color: "#ffffff" }}>Generating perfect font pair...</Text>
                 </div>
-                {/* Headline text input */}
-                <textarea
-                  ref={headlineRef}
-                  className={styles["headline-textarea"]}
-                  value={headlineText}
-                  onInput={handleHeadlineChange}
-                  style={{ fontFamily: currentPair?.headlineFont.family }}
-                />
-                
-                {/* Body font section */}
-                <div className={styles["body-column"]}>
-                  <p className={styles["body-font-name"]}>
-                    {currentPair?.bodyFont.family || "News Gothic"}
-                  </p>
-                  <div className={styles["body-controls"]}>
-                    {/* Lock/Unlock button for body font */}
-                    <button
-                      className={styles.custom_icon}
-                      onClick={() => toggleLock("body")}
-                    >
-                      {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
-                    </button>
-                    <span style={{ fontSize: "8px" }}>•</span>
-                    {/* Regenerate body font button */}
-                    <button className={styles.custom_icon} onClick={regenerateBodyFont}>
-                      <RefreshCw size={12} />
-                    </button>
-                  </div>
+              ) : null}
+              {/* Headline font section */}
+              <div className={styles["headline-column"]}>
+                <p className={styles["headline-font-name"]}>
+                  {currentPair?.headlineFont.family || "Inter"}
+                </p>
+                <div className={styles["headline-controls"]}>
+                  {/* Lock/Unlock button for headline font */}
+                  <button
+                    className={styles.custom_icon}
+                    onClick={() => toggleLock("headline")}
+                  >
+                    {headlineLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                  </button>
+                  <span style={{ fontSize: "8px" }}>•</span>
+                  {/* Regenerate headline font button */}
+                  <button className={styles.custom_icon} onClick={regenerateHeadlineFont}>
+                    <RefreshCw size={12} />
+                  </button>
                 </div>
-                {/* Body text input */}
-                <textarea
-                  ref={bodyRef}
-                  className={styles["body-textarea"]}
-                  value={bodyText}
-                  onInput={handleBodyChange}
-                  style={{ fontFamily: currentPair?.bodyFont.family }}
-                />
               </div>
-            )}
+              {/* Headline text */}
+              <p
+                className={styles["headline-text"]}
+                style={{ fontFamily: currentPair?.headlineFont.family }}
+              >
+                {headlineText}
+              </p>
+              
+              {/* Body font section */}
+              <div className={styles["body-column"]}>
+                <p className={styles["body-font-name"]}>
+                  {currentPair?.bodyFont.family || "News Gothic"}
+                </p>
+                <div className={styles["body-controls"]}>
+                  {/* Lock/Unlock button for body font */}
+                  <button
+                    className={styles.custom_icon}
+                    onClick={() => toggleLock("body")}
+                  >
+                    {bodyLocked ? <Lock size={12} /> : <Unlock size={12} />}
+                  </button>
+                  <span style={{ fontSize: "8px" }}>•</span>
+                  {/* Regenerate body font button */}
+                  <button className={styles.custom_icon} onClick={regenerateBodyFont}>
+                    <RefreshCw size={12} />
+                  </button>
+                </div>
+              </div>
+              {/* Body text */}
+              <p
+                className={styles["body-text"]}
+                style={{ fontFamily: currentPair?.bodyFont.family }}
+              >
+                {bodyText}
+              </p>
+            </div>
           </div>
 
           {/* Vibe container */}
