@@ -51,6 +51,7 @@ function FontDuoUI() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingLucky, setIsGeneratingLucky] = useState(false);
+  const [selectedNodeCount, setSelectedNodeCount] = useState(0);
 
   // Refs
   const headlineRef = useRef<HTMLTextAreaElement>(null);
@@ -169,8 +170,18 @@ function FontDuoUI() {
 
   // Handle apply button click
   const handleApply = () => {
-    console.log("Apply button clicked");
+    if (currentPair) {
+      parent.postMessage({ pluginMessage: { type: 'apply-fonts', fonts: currentPair } }, '*');
+    }
   };
+
+  useEffect(() => {
+    window.onmessage = (event) => {
+      if (event.data.pluginMessage.type === 'selectionChange') {
+        setSelectedNodeCount(event.data.pluginMessage.count);
+      }
+    };
+  }, []);
 
   return (
     <Container space="medium" style={{ padding: 0, marginTop: "-12px" }}>
@@ -295,7 +306,7 @@ function FontDuoUI() {
               💡 Tip: Select up to 2 text nodes - one for headline and one for body text.
             </p>
             <p className={styles["nodes-selected"]}>
-                2 text nodes selected
+                {selectedNodeCount} text node{selectedNodeCount !== 1 ? 's' : ''} selected
             </p>
           </div>
         </div>

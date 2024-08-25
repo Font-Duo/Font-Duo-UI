@@ -62,7 +62,7 @@
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
   width: 100%;
 }
 
@@ -183,9 +183,9 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  font-size: 13px;
+  font-size: 13px !important;
   line-height: 20px;
-  font-weight: 300;
+  font-weight: 300 !important;
   color: var(--text-color);
 }
 
