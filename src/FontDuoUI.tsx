@@ -66,13 +66,6 @@ function FontDuoUI() {
     initializeFonts();
   }, []);
 
-  // Generate new font pair when vibe is selected
-  useEffect(() => {
-    if (isVibeSelected) {
-      generateNewPair();
-    }
-  }, [vibe, isVibeSelected]);
-
   // Generate new font pair
   const generateNewPair = async () => {
     setIsGenerating(true);
@@ -94,10 +87,12 @@ function FontDuoUI() {
 
   // Load font from Google Fonts
   const loadFont = (fontFamily: string) => {
+    console.log("Loading font:", fontFamily);
     const link = document.createElement("link");
     link.href = `https://fonts.googleapis.com/css?family=${fontFamily.replace(" ", "+")}`;
     link.rel = "stylesheet";
     document.head.appendChild(link);
+    console.log("Font loaded:", fontFamily);
   };
 
   // Handle vibe change
@@ -105,7 +100,15 @@ function FontDuoUI() {
     console.log("handleVibeChange called with:", newVibe);
     setVibe(newVibe);
     setIsVibeSelected(true);
-    generateNewPair();
+    setIsLoading(true);
+    console.log("Generating new font pair...");
+    const newPair = generateFontPair(newVibe);
+    console.log("New pair generated:", newPair);
+    setCurrentPair(newPair);
+    loadFont(newPair.headlineFont.family);
+    loadFont(newPair.bodyFont.family);
+    setIsLoading(false);
+    console.log("Font pair set and loaded");
   };
 
   // Regenerate headline font
