@@ -29,8 +29,11 @@ export async function fetchGoogleFonts() {
   const url = `https://www.googleapis.com/webfonts/v1/webfonts?key=${apiKey}&sort=popularity`;
 
   try {
+    console.log("Fetching fonts from Google Fonts API...");
     const response = await fetch(url);
     const data = await response.json();
+
+    console.log(`Received ${data.items.length} fonts from API`);
 
     googleFonts = data.items
       .filter((font: any) => {
@@ -50,10 +53,13 @@ export async function fetchGoogleFonts() {
         files: font.files,
         popularity: index + 1, // This now represents the font's rank within the filtered list
       }));
-    console.log(googleFonts);
+    
+    console.log(`After filtering, ${googleFonts.length} fonts remain`);
+    console.log("First 5 fonts:", googleFonts.slice(0, 5).map(f => f.family));
   } catch (error) {
     console.error("Error fetching Google Fonts:", error);
-    // Fallback to hardcoded fonts if the API call failsd
+    console.log("Falling back to hardcoded font list");
+    // Fallback to hardcoded fonts if the API call fails
     googleFonts = [
       {
         family: "Roboto",
