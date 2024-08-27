@@ -1,17 +1,15 @@
 {
   "api": "1.0.0",
-  "editorType": [
-    "figma"
-  ],
-  "id": "1409953180044392496",
+  "editorType": ["figma"],
+  "id": "1410153659993903584",
   "name": "Font Duo",
   "main": "build/main.js",
   "ui": "build/ui.js",
+  "documentAccess": "dynamic-page",
   "networkAccess": { 
     "allowedDomains": [
       "https://fonts.googleapis.com",
       "https://fonts.gstatic.com"
-    ]
-  },
-  "documentAccess": "dynamic-page"
+    ] 
+  }
 }
