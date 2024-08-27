@@ -30,7 +30,16 @@ export async function fetchGoogleFonts() {
   try {
     console.log("Fetching fonts from Google Fonts API...");
     const response = await fetch(url);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
     const data = await response.json();
+
+    if (!data.items || !Array.isArray(data.items)) {
+      throw new Error("Unexpected API response format");
+    }
 
     console.log(`Received ${data.items.length} fonts from API`);
 
@@ -57,6 +66,9 @@ export async function fetchGoogleFonts() {
     console.log("First 5 fonts:", googleFonts.slice(0, 5).map(f => f.family));
   } catch (error) {
     console.error("Error fetching Google Fonts:", error);
+    if (error instanceof Error) {
+      console.error("Error message:", error.message);
+    }
     console.log("Falling back to hardcoded font list");
     // Fallback to hardcoded fonts if the API call fails
     googleFonts = [
@@ -256,13 +268,17 @@ export function generateFontPair(vibe: string): FontPair {
           (font) => font.category === "sans-serif" && !isLikelyAllCaps(font)
         )
         .sort((a, b) => a.popularity - b.popularity)
-        .slice(0, 20);
+        .slice(0, 200);
       bodyFonts = googleFonts
         .filter(
           (font) => font.category === "sans-serif" && !isLikelyAllCaps(font)
         )
         .sort((a, b) => a.popularity - b.popularity)
-        .slice(0, 30);
+        .slice(0, 200);
+      
+      console.log(`Modern vibe - Headline fonts: ${headlineFonts.length}, Body fonts: ${bodyFonts.length}`);
+      console.log("Headline fonts:", headlineFonts.map(f => f.family));
+      console.log("Body fonts:", bodyFonts.map(f => f.family));
       break;
     case "playful":
       headlineFonts = googleFonts.filter(
