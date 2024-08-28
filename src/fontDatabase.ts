@@ -238,6 +238,7 @@ function isLikelyAllCaps(font: Font): boolean {
 }
 
 export function generateFontPair(vibe: string): FontPair {
+  console.log("Generating font pair for vibe:", vibe);
   let headlineFonts: Font[] = [];
   let bodyFonts: Font[] = [];
 
@@ -322,5 +323,11 @@ export function generateFontPair(vibe: string): FontPair {
     bodyFont = bodyFonts[Math.floor(Math.random() * bodyFonts.length)];
   } while (bodyFont.family === headlineFont.family);
 
-  return { headlineFont, bodyFont };
+  console.log("Selected headline font:", headlineFont);
+  console.log("Selected body font:", bodyFont);
+
+  return {
+    headlineFont: headlineFont,
+    bodyFont: bodyFont
+  };
 }

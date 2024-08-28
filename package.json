@@ -27,9 +27,17 @@
     "editorType": [
       "figma"
     ],
-    "id": "Font-Duo",
+    "id": "1410153659993903584",
     "name": "Font Duo",
     "main": "src/main.ts",
-    "ui": "src/ui.tsx"
+    "ui": "src/ui.tsx",
+    "networkAccess": {
+      "allowedDomains": [
+        "https://www.googleapis.com",
+        "https://fonts.googleapis.com",
+        "https://fonts.gstatic.com"
+      ]
+    },
+    "documentAccess": "dynamic-page"
   }
 }

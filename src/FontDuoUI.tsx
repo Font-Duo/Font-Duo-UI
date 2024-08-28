@@ -87,12 +87,13 @@ function FontDuoUI() {
 
   // Load font from Google Fonts
   const loadFont = (fontFamily: string) => {
-    console.log("Loading font:", fontFamily);
+    console.log("loadFont called for:", fontFamily);
     const link = document.createElement("link");
     link.href = `https://fonts.googleapis.com/css?family=${fontFamily.replace(" ", "+")}`;
     link.rel = "stylesheet";
+    console.log("Font stylesheet URL:", link.href);
     document.head.appendChild(link);
-    console.log("Font loaded:", fontFamily);
+    console.log("Font stylesheet appended to document head");
   };
 
   // Handle vibe change
@@ -104,7 +105,13 @@ function FontDuoUI() {
     console.log("Generating new font pair...");
     const newPair = generateFontPair(newVibe);
     console.log("New pair generated:", newPair);
-    setCurrentPair(newPair);
+    setCurrentPair((prevPair) => {
+      if (!prevPair) return newPair;
+      return {
+        headlineFont: headlineLocked ? prevPair.headlineFont : newPair.headlineFont,
+        bodyFont: bodyLocked ? prevPair.bodyFont : newPair.bodyFont,
+      };
+    });
     loadFont(newPair.headlineFont.family);
     loadFont(newPair.bodyFont.family);
     setIsLoading(false);
@@ -265,7 +272,10 @@ function FontDuoUI() {
               {/* Body text */}
               <p
                 className={styles["body-text"]}
-                style={{ fontFamily: currentPair?.bodyFont.family }}
+                style={{ 
+                  fontFamily: currentPair?.bodyFont.family,
+                  fontWeight: 'normal' // This ensures the body text is always displayed as Regular
+                }}
               >
                 {bodyText}
               </p>
